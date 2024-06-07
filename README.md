@@ -63,5 +63,5 @@ GOOGLE_API_KEY=your-google-api-key
 
 ## Link
 
-[Sales](https://sales08analyze.streamlit.app/)
+[Sales_Analysis](https://salesanalysis-mg8solktkyfvamm95yozwe.streamlit.app/)
 
