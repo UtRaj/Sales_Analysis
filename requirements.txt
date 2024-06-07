@@ -1,0 +1,9 @@
+nltk
+streamlit
+textblob
+scikit-learn
+textstat
+google-generativeai
+python-dotenv
+chromadb
+faiss-cpu
