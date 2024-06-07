@@ -16,15 +16,15 @@ from textstat import flesch_kincaid_grade
 
 import google.generativeai as genai
 
-# Load environment variables
+
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-# Set NLTK data directory
+
 nltk_data_dir = os.path.join(os.path.expanduser("~"), "nltk_data")
 nltk.data.path.append(nltk_data_dir)
 
-# Check if NLTK data is available, if not, download
+
 if not os.path.exists(os.path.join(nltk_data_dir, 'tokenizers/punkt')):
     nltk.download('punkt', download_dir=nltk_data_dir)
 if not os.path.exists(os.path.join(nltk_data_dir, 'taggers/averaged_perceptron_tagger')):
@@ -32,37 +32,37 @@ if not os.path.exists(os.path.join(nltk_data_dir, 'taggers/averaged_perceptron_t
 if not os.path.exists(os.path.join(nltk_data_dir, 'corpora/stopwords')):
     nltk.download('stopwords', download_dir=nltk_data_dir)
 
-# Initialize SentenceTransformer model for embeddings
+
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
-# Vector database setup
+
 index = faiss.IndexFlatL2(384)  # Dimension 384 for the 'all-MiniLM-L6-v2' model
 
-# Function to read the content of the provided file
+
 def read_file(uploaded_file):
     content = uploaded_file.getvalue().decode("utf-8")
     return content
 
-# Function to preprocess text
+
 def preprocess_text(text):
     text = re.sub(r'\[.*?\]', '', text)
     text = text.lower()
     text = re.sub(r'\s+', ' ', text)
     return text.strip()
 
-# Function to calculate average word length
+
 def average_word_length(text):
     words = word_tokenize(text)
     word_lengths = [len(word) for word in words]
     return sum(word_lengths) / len(words)
 
-# Function to calculate punctuation density
+
 def punctuation_density(text):
     total_chars = len(text)
     num_punctuation = sum([1 for char in text if char in string.punctuation])
     return num_punctuation / total_chars
 
-# Function to calculate part-of-speech density
+
 def pos_density(text):
     tokens = word_tokenize(text)
     tagged_tokens = pos_tag(tokens)
@@ -71,20 +71,20 @@ def pos_density(text):
     pos_density = {tag: count / total_words for tag, count in pos_counts.items()}
     return pos_density
 
-# Function to calculate sentence complexity
+
 def sentence_complexity(text):
     sentences = sent_tokenize(text)
     complexity = sum([len(sent.split()) for sent in sentences]) / len(sentences)
     return complexity
 
-# Function to calculate repetition ratio
+
 def repetition_ratio(text):
     words = word_tokenize(text)
     unique_words = set(words)
     repetition_ratio = (len(words) - len(unique_words)) / len(words)
     return repetition_ratio
 
-# Dynamic Parameter Tracking Function
+
 def dynamic_parameter_tracking(transcript_text):
     avg_word_len = average_word_length(transcript_text)
     punctuation_dens = punctuation_density(transcript_text)
@@ -104,7 +104,7 @@ def dynamic_parameter_tracking(transcript_text):
 
     return updated_parameters
 
-# Function to generate a score and justification
+
 def generate_score_and_justification(transcript_text, avg_word_len, punctuation_dens, pos_dens, sent_comp, rep_ratio, readability_score):
     prompt = f"""
     Analyze the following sales conversation transcript to determine the likelihood of the customer purchasing the course. Provide a score out of 100 for the likelihood of conversion. Also, justify the score with five bullet points, considering various aspects such as language quality, customer engagement, agent responsiveness, and any other relevant factors you identify.
@@ -156,7 +156,7 @@ def generate_score_and_justification(transcript_text, avg_word_len, punctuation_
     response = model.generate_content(prompt)
     return response.text.strip()
 
-# Function to generate embeddings and store in vector database
+
 def generate_and_store_embeddings(text):
     embeddings = model.encode([text])
     index.add(embeddings)
